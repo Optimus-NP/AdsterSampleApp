@@ -1,13 +1,9 @@
-import { StyleSheet, View } from 'react-native';
-import { Button } from '../components/button';
-import { Header } from '../components/header';
-import { NavigationProp } from '@react-navigation/native';
+import {StyleSheet, View} from 'react-native';
+import {Button} from '../components/button';
+import {Header} from '../components/header';
+import {NavigationProp} from '@react-navigation/native';
 
-export const HomeScreen = ({
-  navigation,
-}: {
-  navigation: NavigationProp<any>;
-}) => {
+export const HomeScreen = ({navigation}: {navigation: NavigationProp<any>}) => {
   return (
     <View style={styles.container}>
       <Header title="Home Screen" />
@@ -16,6 +12,18 @@ export const HomeScreen = ({
           title="Banner Ad"
           onPress={() => {
             navigation.navigate('BannerAdScreen');
+          }}
+        />
+        <Button
+          title="Banner Ad 320X50"
+          onPress={() => {
+            navigation.navigate('BannerTestAdScreen');
+          }}
+        />
+        <Button
+          title="Banner Ad 300X250"
+          onPress={() => {
+            navigation.navigate('BannerNewAdScreen');
           }}
         />
         <Button

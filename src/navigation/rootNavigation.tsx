@@ -1,12 +1,14 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { SdkLoadingScreen } from '../screens/sdkLoadingScreen';
-import { HomeScreen } from '../screens/homeScreen';
-import { BannerAdScreen } from '../screens/bannerAdScreen';
-import { NativeAdScreen } from '../screens/nativeAdScreen';
-import { UnifiedAdScreen } from '../screens/unifiedAdScreen';
-import { InterstitialAdScreen } from '../screens/interstitialAdScreen';
-import { RewardedAdScreen } from '../screens/rewardedAdScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {SdkLoadingScreen} from '../screens/sdkLoadingScreen';
+import {HomeScreen} from '../screens/homeScreen';
+import {BannerAdScreen} from '../screens/bannerAdScreen';
+import {NativeAdScreen} from '../screens/nativeAdScreen';
+import {UnifiedAdScreen} from '../screens/unifiedAdScreen';
+import {InterstitialAdScreen} from '../screens/interstitialAdScreen';
+import {RewardedAdScreen} from '../screens/rewardedAdScreen';
+import {BannerTestAdScreen} from '../screens/bannerTestAdScreen';
+import {BannerNewAdScreen} from '../screens/bannerNewAdScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -34,6 +36,22 @@ export const RootNavigation = () => {
         <Stack.Screen
           name="BannerAdScreen"
           component={BannerAdScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="BannerTestAdScreen"
+          component={BannerTestAdScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        <Stack.Screen
+          name="BannerNewAdScreen"
+          component={BannerNewAdScreen}
           options={{
             headerShown: false,
           }}
