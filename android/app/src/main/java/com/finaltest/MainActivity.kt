@@ -1,4 +1,4 @@
-package com.reactnative.adster
+package com.finaltest
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
