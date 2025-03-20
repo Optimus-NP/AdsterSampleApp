@@ -1,4 +1,4 @@
-package com.finaltest
+package com.reactnative.adster
 
 import android.app.Application
 import com.facebook.react.PackageList
