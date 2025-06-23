@@ -6,6 +6,7 @@
  */
 
 import React from 'react';
+import { enableScreens } from 'react-native-screens';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -114,5 +115,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
 });
+
+enableScreens();
 
 export default App;

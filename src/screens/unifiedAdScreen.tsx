@@ -1,18 +1,25 @@
-import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
-import {Header} from '../components/header';
-import {NavigationProp} from '@react-navigation/native';
-import {useState} from 'react';
-import {Button} from '../components/button';
+import React, {useState} from 'react';
 import {
-  AdvertiserView,
-  BodyView,
-  CallToActionView,
-  HeadlineView,
-  IconView,
-  testPlacementNames,
-  UnifiedAdEvent,
+  ActivityIndicator,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+} from 'react-native';
+import {NavigationProp} from '@react-navigation/native';
+import {
   UnifiedAdView,
+  UnifiedAdEvent,
+  IconView,
+  HeadlineView,
+  BodyView,
+  AdvertiserView,
+  CallToActionView,
+  testPlacementNames,
 } from 'adster-react-native-client';
+
+import {Header} from '../components/header';
+import {Button} from '../components/button';
 import {showToastMessage} from '../utils/showToastMessage';
 
 export const UnifiedAdScreen = ({
@@ -20,14 +27,21 @@ export const UnifiedAdScreen = ({
 }: {
   navigation: NavigationProp<any>;
 }) => {
-  const [loadUnifiedAdError, setLoadUnifiedAdError] = useState(false);
-  const [toastMessages, setToastMessages] = useState<string[]>([]);
-  const [loadingUnifiedAd, setLoadingUnifiedAd] = useState(true);
+  const [adLoadError, setAdLoadError] = useState(false);
+  const [eventLogs, setEventLogs] = useState<string[]>([]);
+  const [adLoading, setAdLoading] = useState(true);
+
+  const handleReload = () => {
+    setEventLogs([]);
+    //@ts-ignore
+    navigation.replace('UnifiedAdScreen');
+  };
+
   return (
     <View style={styles.container}>
       <Header
         title="Unified Ad Screen"
-        back={true}
+        back
         onPressBack={() => {
           if (navigation.canGoBack()) {
             navigation.goBack();
@@ -35,8 +49,10 @@ export const UnifiedAdScreen = ({
         }}
       />
 
-      <View style={styles.viewContainer}>
-        {loadingUnifiedAd && <ActivityIndicator size="large" color="#0000ff" />}
+      <ScrollView
+        contentContainerStyle={styles.viewContainer}
+        keyboardShouldPersistTaps="handled">
+        {adLoading && <ActivityIndicator size="large" color="#007bff" />}
 
         <UnifiedAdView
           placementName={testPlacementNames.unified}
@@ -47,40 +63,40 @@ export const UnifiedAdScreen = ({
             const message = event.nativeEvent.message;
             console.log('Unified Banner Ad loaded: ', message);
             showToastMessage('Unified Banner Ad loaded');
-            setLoadUnifiedAdError(false);
-            setToastMessages(prev => [...prev, message]);
-            setLoadingUnifiedAd(false);
+            setAdLoadError(false);
+            setEventLogs(prev => [...prev, message]);
+            setAdLoading(false);
           }}
           onNativeAdLoaded={event => {
             const message = event.nativeEvent.message;
             console.log('Unified Native Ad loaded: ', message);
             showToastMessage('Unified Native Ad loaded');
-            setLoadUnifiedAdError(false);
-            setToastMessages(prev => [...prev, message]);
-            setLoadingUnifiedAd(false);
+            setAdLoadError(false);
+            setEventLogs(prev => [...prev, message]);
+            setAdLoading(false);
           }}
           onFailure={event => {
             const error = event.nativeEvent.error;
             console.error('Unified Ad failed to load:', error);
             showToastMessage('Unified Ad failed to load');
-            setLoadUnifiedAdError(true);
-            setToastMessages(prev => [
+            setAdLoadError(true);
+            setEventLogs(prev => [
               ...prev,
               'Unified Ad failed to load: ' + error,
             ]);
-            setLoadingUnifiedAd(false);
+            setAdLoading(false);
           }}
           onAdClicked={event => {
             const message = event.nativeEvent.message;
             console.log('Unified Ad Clicked:', message);
             showToastMessage('Unified Ad clicked');
-            setToastMessages(prev => [...prev, message]);
+            setEventLogs(prev => [...prev, message]);
           }}
           onAdImpression={event => {
             const message = event.nativeEvent.message;
             console.log('Unified Ad Impression:', message);
             showToastMessage('Unified Ad impression');
-            setToastMessages(prev => [...prev, message]);
+            setEventLogs(prev => [...prev, message]);
           }}>
           <View style={styles.nativeAdContainer}>
             <View style={styles.iconHeadingRowContainer}>
@@ -100,22 +116,16 @@ export const UnifiedAdScreen = ({
           </View>
         </UnifiedAdView>
 
-        {loadUnifiedAdError && (
-          <Button
-            title="Reload Unified Ad"
-            onPress={() => {
-              setToastMessages([]);
-              //@ts-ignore
-              navigation.replace('UnifiedAdScreen');
-            }}
-          />
+        {adLoadError && (
+          <Button title="Reload Unified Ad" onPress={handleReload} />
         )}
-        {toastMessages.map((message, index) => (
+
+        {eventLogs.map((msg, index) => (
           <Text key={index} style={styles.toastMessageStyle}>
-            {message}
+            {msg}
           </Text>
         ))}
-      </View>
+      </ScrollView>
     </View>
   );
 };
@@ -123,24 +133,31 @@ export const UnifiedAdScreen = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fafafa',
   },
   viewContainer: {
     justifyContent: 'center',
     alignItems: 'center',
-    flex: 1,
+    flexGrow: 1,
     gap: 15,
+    padding: 16,
   },
   toastMessageStyle: {
     fontSize: 15,
-    color: 'black',
-    width: '80%',
+    color: '#333',
+    backgroundColor: '#f0f0f0',
+    width: '90%',
+    padding: 10,
+    borderRadius: 10,
+    marginTop: 5,
     textAlign: 'center',
   },
   nativeAdWrapperContainer: {
     backgroundColor: '#E2F2FF',
     borderRadius: 20,
-    width: '90%',
+    width: '100%',
     marginBottom: 20,
+    overflow: 'hidden',
   },
   unifiedAdStyle: {
     marginVertical: 20,
@@ -152,6 +169,9 @@ const styles = StyleSheet.create({
   iconViewStyle: {
     width: 100,
     height: 100,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
   },
   iconHeadingRowContainer: {
     flexDirection: 'row',
@@ -185,6 +205,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#43bce9',
     borderRadius: 10,
     minHeight: 40,
+    marginTop: 10,
   },
   ctaTextStyle: {
     fontSize: 15,
@@ -195,10 +216,11 @@ const styles = StyleSheet.create({
   },
   bannerContainer: {
     marginVertical: 20,
-    width: '90%',
+    width: '100%',
     height: 280,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'green',
+    borderRadius: 10,
   },
 });
