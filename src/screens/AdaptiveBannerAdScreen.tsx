@@ -43,7 +43,7 @@ export const AdaptiveBannerAdScreen = ({ navigation }: { navigation: Nav }) => {
   
   const reloadScreen = () => {
     showToastMessage('Reloading Adaptive Banner Ad');
-    setLog(p => [...p, '🔁 Reloading ad...']);
+    setLog(p => [...p, ' Reloading ad...']);
     setLoading(true);
     setError(false);
     navigation.replace('AdaptiveBannerAdScreen');
@@ -66,26 +66,25 @@ export const AdaptiveBannerAdScreen = ({ navigation }: { navigation: Nav }) => {
             bannerContainerStyle={{ ...styles.adContainer, height: adHeight }}
             onAdLoaded={(e: BannerAdEvent) => {
                 const msg = e?.nativeEvent?.message ?? 'loaded';
-                setLog(p => [...p, `Loaded – ${msg}`]);
+                setLog(p => [...p, `Loaded ${msg}`]);
                 setLoading(false);
                 setError(false);
                 showToastMessage('Ad Loaded');
             }}
             onAdLoadFailure={(e: BannerAdEvent) => {
-                // ⬇️ safest way to read it
                 const err = e?.nativeEvent?.error ??
                 e?.nativeEvent?.message ??
-                'Unknown error – check logs';
-                setLog(p => [...p, `Failed – ${err}`]);
+                'Unknown error check logs';
+                setLog(p => [...p, `Failed ${err}`]);
                 setLoading(false);
                 setError(true);
                 showToastMessage('Load Failed');
             }}
             onAdClicked={(e: BannerAdEvent) =>
-                setLog(p => [...p, `Click – ${e?.nativeEvent?.message ?? ''}`])
+                setLog(p => [...p, `Click ${e?.nativeEvent?.message ?? ''}`])
             }
             onAdImpression={(e: BannerAdEvent) =>
-                setLog(p => [...p, ` Impression – ${e?.nativeEvent?.message ?? ''}`])
+                setLog(p => [...p, ` Impression  ${e?.nativeEvent?.message ?? ''}`])
             }
         />
 
