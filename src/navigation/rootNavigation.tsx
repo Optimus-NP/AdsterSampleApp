@@ -9,6 +9,8 @@ import {InterstitialAdScreen} from '../screens/interstitialAdScreen';
 import {RewardedAdScreen} from '../screens/rewardedAdScreen';
 import {BannerTestAdScreen} from '../screens/bannerTestAdScreen';
 import {BannerNewAdScreen} from '../screens/bannerNewAdScreen';
+import React from 'react';
+import { AdaptiveBannerAdScreen } from '../screens/AdaptiveBannerAdScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -80,6 +82,13 @@ export const RootNavigation = () => {
         <Stack.Screen
           name="RewardedAdScreen"
           component={RewardedAdScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="AdaptiveBannerAdScreen"
+          component={AdaptiveBannerAdScreen}
           options={{
             headerShown: false,
           }}

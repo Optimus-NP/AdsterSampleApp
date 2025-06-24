@@ -2,6 +2,7 @@ import {StyleSheet, View} from 'react-native';
 import {Button} from '../components/button';
 import {Header} from '../components/header';
 import {NavigationProp} from '@react-navigation/native';
+import {showToastMessage} from '../utils/showToastMessage';
 
 export const HomeScreen = ({navigation}: {navigation: NavigationProp<any>}) => {
   return (
@@ -48,6 +49,14 @@ export const HomeScreen = ({navigation}: {navigation: NavigationProp<any>}) => {
           title="Rewarded Ad"
           onPress={() => {
             navigation.navigate('RewardedAdScreen');
+          }}
+        />
+        <Button
+          title="Adaptive Banner Ad"
+          onPress={() => {
+            showToastMessage('Opening Adaptive Banner Ad screen...');
+            console.log('Navigating to AdaptiveBannerAdScreen');
+            navigation.navigate('AdaptiveBannerAdScreen');
           }}
         />
       </View>
