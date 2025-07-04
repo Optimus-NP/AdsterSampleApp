@@ -1,129 +1,119 @@
-// screens/AdaptiveBannerAdScreen.tsx
-import React, { useEffect, useState, useMemo } from 'react';
+// File: js/screens/AdaptiveBannerAdScreen.tsx
+
+import React, { useState, useEffect } from 'react';
 import {
+  View,
   ActivityIndicator,
-  Dimensions,
   StyleSheet,
   Text,
-  View,
-  ScrollView,
+  Dimensions,
+  PixelRatio,
 } from 'react-native';
-import {
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
-import {
-  BannerAdView,
-  BannerAdEvent,
-} from 'adster-react-native-client';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../navigation/RootNavigation';
 import { Header } from '../components/header';
-import { Button } from '../components/button';
-import { showToastMessage } from '../utils/showToastMessage';
+import { AdaptiveBannerAd } from '../components/AdaptiveBannerAd';
 
-type RootStackParamList = {
-  AdaptiveBannerAdScreen: undefined;
-};
-type Nav = NativeStackNavigationProp<
+type Props = NativeStackScreenProps<
   RootStackParamList,
   'AdaptiveBannerAdScreen'
 >;
 
-export const AdaptiveBannerAdScreen = ({ navigation }: { navigation: Nav }) => {
-  const [loading, setLoading]   = useState(true);
-  const [error, setError]       = useState(false);
-  const [logMessages, setLog]   = useState<string[]>([]);
-  const [adHeight, setAdHeight] = useState(50);
+// Get screen width in dp once
+const screenWidthDp =
+  Dimensions.get('window').width / PixelRatio.get();
 
-  
-  const adWidth = useMemo(() => Math.floor(Dimensions.get('window').width), []);
+export default function AdaptiveBannerAdScreen({
+  route,
+  navigation,
+}: Props) {
+  // start in the mode passed, or anchored by default
+  const initialMode = route.params?.mode ?? 'anchored';
+  const [mode, setMode] = useState<'inline' | 'anchored'>(initialMode);
+
+  const placementId = 'adaptive_banner_test';
+
+  // Inline banners will now request a minimum of 320dp width
+  const inlineWidthDp = mode === 'inline' ? 320 : undefined;
+
+  const [height, setHeight] = useState(0);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Reset loading/error/height whenever mode changes
   useEffect(() => {
-    // Google’s inline-adaptive formula: height ≈ width / 6.4 (320 × 50 baseline)
-    setAdHeight(Math.floor(adWidth / 6.4));
-  }, [adWidth]);
+    setLoaded(false);
+    setError(null);
+    setHeight(0);
+  }, [mode]);
 
-  
-  const reloadScreen = () => {
-    showToastMessage('Reloading Adaptive Banner Ad');
-    setLog(p => [...p, ' Reloading ad...']);
-    setLoading(true);
-    setError(false);
-    navigation.replace('AdaptiveBannerAdScreen');
-  };
-
- 
   return (
     <View style={styles.container}>
       <Header
-        title="Adaptive Banner Ad"
+        title={`Adaptive Banner (${mode})`}
         back
-        onPressBack={() => navigation.canGoBack() && navigation.goBack()}
+        onPressBack={() => navigation.goBack()}
       />
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {loading && <ActivityIndicator size="large" color="#007bff" />}
+      {!loaded && !error && (
+        <ActivityIndicator style={styles.spinner} />
+      )}
+      {error && (
+        <Text style={styles.errorText}>{error}</Text>
+      )}
 
-        <BannerAdView
-            placementName="Adster_Banner_Test"
-            bannerContainerStyle={{ ...styles.adContainer, height: adHeight }}
-            onAdLoaded={(e: BannerAdEvent) => {
-                const msg = e?.nativeEvent?.message ?? 'loaded';
-                setLog(p => [...p, `Loaded ${msg}`]);
-                setLoading(false);
-                setError(false);
-                showToastMessage('Ad Loaded');
-            }}
-            onAdLoadFailure={(e: BannerAdEvent) => {
-                const err = e?.nativeEvent?.error ??
-                e?.nativeEvent?.message ??
-                'Unknown error check logs';
-                setLog(p => [...p, `Failed ${err}`]);
-                setLoading(false);
-                setError(true);
-                showToastMessage('Load Failed');
-            }}
-            onAdClicked={(e: BannerAdEvent) =>
-                setLog(p => [...p, `Click ${e?.nativeEvent?.message ?? ''}`])
+      <View
+        style={[
+          styles.adWrapper,
+          mode === 'inline' && {
+            width: `${(inlineWidthDp! / screenWidthDp) * 100}%`,
+            alignSelf: 'center',
+          },
+          { height },
+        ]}
+      >
+        <AdaptiveBannerAd
+          placementId={placementId}
+          mode={mode}
+          inlineWidthDp={inlineWidthDp}
+          style={{ width: '100%', height }}
+          onAdLoaded={(e) => {
+            setHeight(e.nativeEvent.adHeight);
+            setLoaded(true);
+          }}
+          onAdFailedToLoad={(e) => {
+            const msg = e.nativeEvent.error;
+            // if inline “no fill”, switch to anchored mode
+            if (mode === 'inline' && msg.includes('No fill')) {
+              setMode('anchored');
+            } else {
+              setError(msg);
             }
-            onAdImpression={(e: BannerAdEvent) =>
-                setLog(p => [...p, ` Impression  ${e?.nativeEvent?.message ?? ''}`])
-            }
+          }}
         />
-
-
-        {error && <Button title="Reload Ad" onPress={reloadScreen} />}
-
-        {logMessages.map((msg, i) => (
-          <Text key={i} style={styles.logText}>
-            {msg}
-          </Text>
-        ))}
-      </ScrollView>
+      </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#ffffff' },
-  content: {
-    flexGrow: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
     padding: 16,
-    gap: 12,
   },
-  adContainer: {
+  spinner: {
+    marginTop: 20,
+  },
+  adWrapper: {
     width: '100%',
-    backgroundColor: '#E8F5E9',
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+    overflow: 'visible',
+    marginTop: 16,
+    minHeight: 50,
   },
-  logText: {
-    backgroundColor: '#f1f1f1',
-    padding: 10,
-    borderRadius: 8,
-    width: '90%',
-    color: '#333',
+  errorText: {
+    color: 'red',
     textAlign: 'center',
+    marginTop: 20,
   },
 });
