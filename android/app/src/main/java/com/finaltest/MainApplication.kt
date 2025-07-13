@@ -10,6 +10,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 import com.finaltest.AdsterPackage
+import com.finaltest.BannerVideoPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -28,6 +29,7 @@ class MainApplication : Application(), ReactApplication {
     override fun getPackages(): List<ReactPackage> {
       val packages = PackageList(this).packages.toMutableList()
       // add your custom package here
+      packages.add(BannerVideoPackage())
       packages.add(AdsterPackage())
       return packages
     }

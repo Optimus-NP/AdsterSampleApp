@@ -96,7 +96,7 @@ android {
 
 dependencies {
     implementation("com.facebook.react:react-android")
-    implementation 'com.adster:orchestrationsdk:1.3.00'
+    implementation 'com.adster:orchestrationsdk:1.3.18'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

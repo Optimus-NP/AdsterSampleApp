@@ -15,6 +15,7 @@ import { InterstitialAdScreen } from '../screens/interstitialAdScreen';
 import { RewardedAdScreen } from '../screens/rewardedAdScreen';
 import { AdaptiveBannerMenu } from '../screens/AdaptiveBannerMenu';
 import AdaptiveBannerAdScreen from '../screens/AdaptiveBannerAdScreen';
+import BannerVideoAdScreen from '../screens/BannerVideoAdScreen';
 
 export type RootStackParamList = {
   SdkLoadingScreen: undefined;
@@ -72,6 +73,10 @@ export const RootNavigation = () => (
         component={AdaptiveBannerAdScreen}
         // Provide a default mode so route.params.mode is never undefined
         initialParams={{ mode: 'anchored' }}
+      />
+      <Stack.Screen
+        name="BannerVideoAdScreen"
+        component={BannerVideoAdScreen}
       />
     </Stack.Navigator>
   </NavigationContainer>
