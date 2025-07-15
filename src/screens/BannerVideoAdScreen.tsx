@@ -4,37 +4,25 @@ import React, { useEffect, useCallback, useState } from 'react'
 import {
   SafeAreaView,
   ScrollView,
-  RefreshControl,
   StyleSheet,
   Dimensions,
   Alert,
   Text,
-  TouchableOpacity,
   ActivityIndicator,
   NativeSyntheticEvent,
-  ViewStyle,
   View,
+  ViewStyle,
 } from 'react-native'
 import { BannerVideoAd } from '../components/BannerVideoAd'
 
 const { width: screenWidth } = Dimensions.get('window')
 
 export default function BannerVideoAdScreen() {
+  const [adLoaded, setAdLoaded] = useState(false)
+
   useEffect(() => {
     console.log('[BannerVideoAdScreen] mounted')
     return () => console.log('[BannerVideoAdScreen] unmounted')
-  }, [])
-
-  const [refreshing, setRefreshing] = useState(false)
-  const [adKey, setAdKey] = useState(0)
-  const [adLoaded, setAdLoaded] = useState(false)
-
-  const onRefresh = useCallback(() => {
-    setRefreshing(true)
-    setAdLoaded(false)
-    setAdKey((k) => k + 1)
-    // simulate network delay
-    setTimeout(() => setRefreshing(false), 1000)
   }, [])
 
   const handleAdLoaded = useCallback(
@@ -56,47 +44,25 @@ export default function BannerVideoAdScreen() {
     (e: NativeSyntheticEvent<{ error: string }>) => {
       console.error('[BannerVideoAdScreen] Ad failed:', e.nativeEvent.error)
       Alert.alert('Ad Load Failed', e.nativeEvent.error)
-      setRefreshing(false)
     },
     []
   )
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
-        contentContainerStyle={styles.container}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
+      <ScrollView contentContainerStyle={styles.container}>
         <Text style={styles.header}>Banner Video Ad</Text>
 
         <View style={styles.adContainer}>
-          {(!adLoaded || refreshing) && (
-            <ActivityIndicator style={styles.loader} />
-          )}
-
-          {!refreshing && (
-            <BannerVideoAd
-              key={adKey}
-              placementId="bannervideo_0"
-              style={styles.banner}
-              onAdLoaded={handleAdLoaded}
-              onAdVisible={handleAdVisible}
-              onAdFailedToLoad={handleAdFailed}
-            />
-          )}
+          {!adLoaded && <ActivityIndicator style={styles.loader} />}
+          <BannerVideoAd
+            placementId="bannervideo_0"
+            style={styles.banner}
+            onAdLoaded={handleAdLoaded}
+            onAdVisible={handleAdVisible}
+            onAdFailedToLoad={handleAdFailed}
+          />
         </View>
-
-        <TouchableOpacity
-          style={styles.button}
-          onPress={onRefresh}
-          disabled={refreshing}
-        >
-          <Text style={styles.buttonText}>
-            {refreshing ? 'Refreshing...' : 'Refresh Ad'}
-          </Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   )
@@ -133,7 +99,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   banner: {
-    flex: 1 as ViewStyle['flex'],  // fill the container
+    flex: 1 as ViewStyle['flex'],
   },
   button: {
     marginTop: 20,
